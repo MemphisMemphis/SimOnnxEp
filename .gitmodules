@@ -1,0 +1,3 @@
+[submodule "onnxruntime"]
+	path = onnxruntime
+	url = https://gitcode.com/GitHub_Trending/on/onnxruntime.git
