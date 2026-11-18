@@ -22,7 +22,7 @@ set(ORT_LIB "${ORT_BUILD_DIR}/libonnxruntime.so")
 # rebuild after updating the submodule.
 add_custom_command(
   OUTPUT "${ORT_LIB}"
-  COMMAND ./build.sh --config "${CMAKE_BUILD_TYPE}" --parallel --build_shared_lib
+  COMMAND ./build.sh --config "${CMAKE_BUILD_TYPE}" --parallel 2 --build_shared_lib
   WORKING_DIRECTORY "${ONNXRUNTIME_ROOT}"
   COMMENT "Building ONNX Runtime shared library (first build is slow)"
   VERBATIM
@@ -39,7 +39,7 @@ set_target_properties(onnxruntime_shared PROPERTIES
 add_dependencies(onnxruntime_shared onnxruntime_build)
 
 # --- 3. Plugin EP (headers only; must NOT link libonnxruntime). -------------
-add_library(simulator_ep SHARED simulator_ep.cc)
+add_library(simulator_ep SHARED src/simulator_ep.cc)
 target_include_directories(simulator_ep PRIVATE
   "${ONNXRUNTIME_ROOT}/include/onnxruntime/core/session"
   "${ONNXRUNTIME_ROOT}/include"
@@ -47,6 +47,10 @@ target_include_directories(simulator_ep PRIVATE
 set_target_properties(simulator_ep PROPERTIES PREFIX "lib")
 
 # --- 4. Test host (links libonnxruntime, dlopens the plugin at runtime). ----
-add_executable(run_sim main.cc)
+add_executable(run_sim test/main.cc)
 target_link_libraries(run_sim PRIVATE onnxruntime_shared ${CMAKE_DL_LIBS})
 add_dependencies(run_sim simulator_ep)
+
+# --- 5. gtest-based tests ---------------------------------------------------
+enable_testing()
+add_subdirectory(test)

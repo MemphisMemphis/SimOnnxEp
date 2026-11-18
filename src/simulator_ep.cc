@@ -568,10 +568,12 @@ OrtStatus* ORT_API_CALL SimulatorEp_CreateState(OrtNodeComputeInfo* this_ptr,
 OrtStatus* ORT_API_CALL SimulatorEp_Compute(OrtNodeComputeInfo* /*this_ptr*/,
                                             void* compute_state,
                                             OrtKernelContext* context) noexcept {
+  std::fprintf(stderr, "[DBG] Compute entry state=%p\n", compute_state);
   const auto* state = static_cast<const SimulatorComputeState*>(compute_state);
   if (state == nullptr) {
     return MakeErrorStatus("SimulatorEP: null compute state");
   }
+  std::fprintf(stderr, "[DBG] op_type=%s\n", state->op_type.c_str());
 
   Sim_Run(nullptr);  // optional simulator hook
 
